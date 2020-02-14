@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx/nginx.conf
+          name: nginx
+          subPath: nginx.conf
+      volumes:
+      - name: nginx
+        configMap:
+          name: nginx
+
+---
+apiVersion: v1
+kind: Service
+metadata: 
+    name: nginx-service
+    labels:
+        app: nginx
+spec:
+    type: NodePort
+    selector:
+        app: nginx
+    ports:
+    - port: 8888
+      nodePort: 30030
